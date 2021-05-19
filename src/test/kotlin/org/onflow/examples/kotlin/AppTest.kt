@@ -27,7 +27,7 @@ internal class AppTest {
         val app = App("localhost", 3569, servicePrivateKeyHex)
 
         // service account address
-        app.createAccount(serviceAccountAddress, userPublicKeyHex)
+        app.createAccount(serviceAccountAddress, emptyList(), userPublicKeyHex)
     }
 
     @Test
@@ -35,7 +35,7 @@ internal class AppTest {
         val app = App("localhost", 3569, servicePrivateKeyHex)
 
         // service account address
-        val recipient: FlowAddress = app.createAccount(serviceAccountAddress, userPublicKeyHex)
+        val recipient: FlowAddress = app.createAccount(serviceAccountAddress, emptyList(), userPublicKeyHex)
 
         // FLOW amounts always have 8 decimal places
         val amount = BigDecimal("10.00000001")
@@ -52,4 +52,12 @@ internal class AppTest {
         println(balance)
     }
 
+    @Test
+    fun `Can mint NFTs`() {
+        val app = App("localhost", 3569, servicePrivateKeyHex)
+        val nftScript = javaClass.classLoader.getResourceAsStream("example_nft.cdc")!!.use { it.readAllBytes() }.toString()
+        val recipient: FlowAddress = app.createAccount(serviceAccountAddress, listOf(Contract("ExampleNFT", nftScript)), userPublicKeyHex)
+
+        Assertions.assertNotNull(recipient)
+    }
 }
